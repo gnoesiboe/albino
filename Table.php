@@ -67,18 +67,33 @@ class Table
     {
       /* @var array $row */
 
-      $return->add($this->generateModel('Page', $data));
+      $return->add($this->generateModel($data));
     }
 
     return $return;
   }
 
   /**
-   * @param string $name        Model class name
-   * @param array $data         Data for the model
+   * @return string
    */
-  protected function generateModel($name, array $data = array())
+  protected function getModelClass()
   {
-    return new $name($data);
+    return preg_replace('/Table$/i', '', get_class($this));
+  }
+
+  /**
+   * @param array $data         Data for the model
+   * @throws Exception
+   */
+  protected function generateModel(array $data = array())
+  {
+    $className = $this->getModelClass();
+
+    if (class_exists($className) === false)
+    {
+      throw new Exception(sprintf('Model class: %s doesn\'t exist', $className));
+    }
+
+    return new $className($data);
   }
 }
