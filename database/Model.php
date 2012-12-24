@@ -21,11 +21,6 @@ abstract class Model extends \Albino\Database\DataHolder
   /**
    * @var array
    */
-  protected $primary = array();
-
-  /**
-   * @var array
-   */
   protected $representations = array();
 
   /**
@@ -46,9 +41,8 @@ abstract class Model extends \Albino\Database\DataHolder
    */
   protected function configureRepresentations()
   {
-    $this->addRepresentation(self::DEFAULT_REPRESENTATION, new ModelRepresentation(
-      ''
-    ));
+    //@todo implement
+    $this->addRepresentation(self::DEFAULT_REPRESENTATION, new ModelRepresentation());
   }
 
   /**

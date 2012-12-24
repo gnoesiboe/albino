@@ -40,11 +40,11 @@ class Collection implements \IteratorAggregate, \Countable
    *
    * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
    *
-   * @return Traversable    An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>
+   * @return \Traversable    An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>
    */
   public function getIterator()
   {
-    return new ArrayIterator($this->data);
+    return new \ArrayIterator($this->data);
   }
 
   /**
@@ -100,7 +100,7 @@ class Collection implements \IteratorAggregate, \Countable
 
   /**
    * @param string $key
-   * @throws Exception
+   * @throws \Exception
    *
    * @todo extend exception for easy exception filtering
    */
@@ -108,7 +108,7 @@ class Collection implements \IteratorAggregate, \Countable
   {
     if ($this->has($key) === false)
     {
-      throw new Exception(sprintf('No item in the collection with key: '), $key);
+      throw new \Exception(sprintf('No item in the collection with key: '), $key);
     }
   }
 
@@ -121,13 +121,13 @@ class Collection implements \IteratorAggregate, \Countable
   }
 
   /**
-   * @throws Exception
+   * @throws \Exception
    */
   protected function validateHasData()
   {
     if ($this->hasData() === false)
     {
-      throw new Exception('Collection doesn\'t have data');
+      throw new \Exception('Collection doesn\'t have data');
     }
   }
 
