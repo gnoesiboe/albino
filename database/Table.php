@@ -57,17 +57,24 @@ class Table
 
   /**
    * @param PDOStatement $stmt
+   * @param string $representation
+   *
    * @return ModelCollection
    */
-  protected function generateCollection(PDOStatement $stmt)
+  protected function generateCollection(PDOStatement $stmt = null, $representation = Model::DEFAULT_REPRESENTATION)
   {
     $return = new ModelCollection();
+
+    if (is_null($stmt) === true)
+    {
+      return $return;
+    }
 
     while ($data = $stmt->fetch(PDO::FETCH_ASSOC))
     {
       /* @var array $row */
 
-      $return->add($this->generateModel($data));
+      $return->add($this->generateModel($representation, $data));
     }
 
     return $return;
@@ -82,10 +89,12 @@ class Table
   }
 
   /**
+   * @param string $representation
    * @param array $data         Data for the model
+   *
    * @throws Exception
    */
-  protected function generateModel(array $data = array())
+  protected function generateModel($representation, array $data = array())
   {
     $className = $this->getModelClass();
 
@@ -94,6 +103,6 @@ class Table
       throw new Exception(sprintf('Model class: %s doesn\'t exist', $className));
     }
 
-    return new $className($data);
+    return new $className($representation, $data);
   }
 }
