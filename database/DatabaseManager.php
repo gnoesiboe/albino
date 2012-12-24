@@ -1,5 +1,7 @@
 <?php
 
+namespace Albino\Database;
+
 /**
  * DatabaseManager class.
  *
@@ -22,9 +24,30 @@ class DatabaseManager
   protected $tables = array();
 
   /**
+   * @static
+   * @var DatabaseManager
+   */
+  protected static $instance;
+
+  /**
+   * @return DatabaseManager
+   */
+  public static function getInstance()
+  {
+    if (self::$instance instanceof DatabaseManager)
+    {
+      return self::$instance;
+    }
+
+    self::$instance = new DatabaseManager();
+
+    return self::$instance;
+  }
+
+  /**
    * Constructor
    */
-  public function __construct()
+  protected function __construct()
   {
     $this->validateRequirements();
   }
@@ -110,14 +133,14 @@ class DatabaseManager
   }
 
   /**
-   * @return Connection
-   * @throws Exception
+   * @return \Albino\Database\Connection
+   * @throws \Exception
    */
   protected function getDefaultConnection()
   {
     if (count($this->connections) === 0)
     {
-      throw new Exception('No connections defined');
+      throw new \Exception('No connections defined');
     }
 
     $keys = array_keys($this->connections);
@@ -132,12 +155,14 @@ class DatabaseManager
    */
   public function prepareTableIdentifier($identifier)
   {
-    if (strpos($identifier, 'Table') !== false)
+    $prefix = 'Application\Table\\';
+
+    if (strpos($identifier, 'Table') === false)
     {
-      return $identifier;
+      $identifier = $identifier . 'Table';
     }
 
-    return $identifier . 'Table';
+    return $prefix . $identifier;
   }
 
   /**

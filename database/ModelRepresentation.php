@@ -1,5 +1,7 @@
 <?php
 
+namespace Albino\Database;
+
 /**
  * ModelRepresentation class.
  *

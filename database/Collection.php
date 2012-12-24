@@ -1,5 +1,7 @@
 <?php
 
+namespace Albino\Database;
+
 /**
  * Collection class.
  *
@@ -8,7 +10,7 @@
  * @author     Gijs Nieuwenhuis <gijs.nieuwenhuis@freshheads.com>
  * @copyright  Freshheads BV
  */
-class Collection implements IteratorAggregate, Countable
+class Collection implements \IteratorAggregate, \Countable
 {
 
   /**

@@ -1,6 +1,9 @@
 <?php
 
-require_once dirname(__FILE__) . '/../Collection.php';
+namespace Albino\Database\Collection;
+
+use \Albino\Database\Model;
+use \Albino\Database\Collection;
 
 /**
  * ModelCollection class.
@@ -30,13 +33,13 @@ class ModelCollection extends Collection
 
   /**
    * @param mixed $item
-   * @throws Exception
+   * @throws \Exception
    */
   protected function validateIsModel($item)
   {
     if (($item instanceof Model) === false)
     {
-      throw new Exception('Collection item should be an instance of Model');
+      throw new \Exception('Collection item should be an instance of Model');
     }
   }
 

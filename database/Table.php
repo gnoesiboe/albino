@@ -1,16 +1,18 @@
 <?php
 
-require_once dirname(__FILE__) . '/collection/ModelCollection.php';
+namespace Albino\Database;
+
+use Albino\Database\Collection\ModelCollection;
 
 /**
  * Table class.
  *
- * @package    <package>
- * @subpackage <subpackage
- * @author     <author>
+ * @package    Albino
+ * @subpackage Table
+ * @author     Gijs Nieuwenhuis <gijs.nieuwenhuis@freshheads.com>
  * @copyright  Freshheads BV
  */
-class Table
+abstract class Table
 {
 
   /**
@@ -45,24 +47,38 @@ class Table
   }
 
   /**
-   * @throws Exception
+   * @throws \Exception
    */
   protected function validateHasConnection()
   {
     if ($this->hasConnection() === false)
     {
-      throw new Exception('No connection set');
+      throw new \Exception('No connection set');
     }
   }
 
   /**
-   * @param PDOStatement $stmt
-   * @param string $representation
+   * @param \PDOStatement $stmt
+   * @param \Closure $modelGenerator
    *
    * @return ModelCollection
    */
-  protected function generateCollection(PDOStatement $stmt = null, $representation = Model::DEFAULT_REPRESENTATION)
+
+  /**
+   * @param \PDOStatement $stmt
+   * @param \Closure $modelGenerator
+   *
+   * @throws \Exception
+   *
+   * @return ModelCollection
+   */
+  protected function generateCollection(\PDOStatement $stmt = null, \Closure $modelGenerator = null)
   {
+    if (($modelGenerator instanceof \Closure) === false)
+    {
+      $modelGenerator = $this->getModelGenerator();
+    }
+
     $return = new ModelCollection();
 
     if (is_null($stmt) === true)
@@ -70,39 +86,55 @@ class Table
       return $return;
     }
 
-    while ($data = $stmt->fetch(PDO::FETCH_ASSOC))
+    $modelClassName = $this->getModelClassName();
+
+    while ($data = $stmt->fetch(\PDO::FETCH_ASSOC))
     {
       /* @var array $row */
 
-      $return->add($this->generateModel($representation, $data));
+      $return->add($modelGenerator($modelClassName, $data));
     }
 
     return $return;
   }
 
   /**
-   * @return string
+   * @param $modelClassName
+   * @param array $data
+   *
+   * @return \Albino\Database\Model;
    */
-  protected function getModelClass()
+  protected function generateModel($modelClassName, array $data = array())
   {
-    return preg_replace('/Table$/i', '', get_class($this));
+    $generator = $this->getModelGenerator();
+    return $generator($modelClassName, $data);
   }
 
   /**
-   * @param string $representation
-   * @param array $data         Data for the model
-   *
-   * @throws Exception
+   * @return \Closure
+   * @throws \Exception
    */
-  protected function generateModel($representation, array $data = array())
+  protected function getModelGenerator()
   {
-    $className = $this->getModelClass();
+    return function($modelClassName, array $data) {
+      if (class_exists($modelClassName) === false)
+      {
+        throw new \Exception(sprintf('Model class: %s doesn\'t exist', $modelClassName));
+      }
 
-    if (class_exists($className) === false)
-    {
-      throw new Exception(sprintf('Model class: %s doesn\'t exist', $className));
-    }
+      return new $modelClassName($data);
+    };
+  }
 
-    return new $className($representation, $data);
+  /**
+   * @return string
+   */
+  protected function getModelClassName()
+  {
+    $tableClassName = end(explode('\\', get_class($this)));
+
+    $modelName = preg_replace('/Table$/i', '', $tableClassName);
+
+    return 'Application\Model\\' . $modelName;
   }
 }

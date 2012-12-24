@@ -1,7 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . '/DataHolder.php';
-require_once dirname(__FILE__) . '/ModelRepresentation.php';
+namespace Albino\Database;
 
 /**
  * Model class.
@@ -11,7 +10,7 @@ require_once dirname(__FILE__) . '/ModelRepresentation.php';
  * @author     Gijs Nieuwenhuis <gijs.nieuwenhuis@freshheads.com>
  * @copyright  Freshheads BV
  */
-class Model extends DataHolder
+abstract class Model extends \Albino\Database\DataHolder
 {
 
   /**
@@ -30,10 +29,10 @@ class Model extends DataHolder
   protected $representations = array();
 
   /**
-   * @param string $representation
    * @param array $data
+   * @param string $representation
    */
-  public function __construct($representation = self::DEFAULT_REPRESENTATION, array $data = array())
+  public function __construct(array $data = array(), $representation = self::DEFAULT_REPRESENTATION)
   {
     $this->configureRepresentations();
 
@@ -54,7 +53,7 @@ class Model extends DataHolder
 
   /**
    * @param $identifier
-   * @param ModelRepresentation $representation
+   * @param \Albino\Database\ModelRepresentation $representation
    */
   public function addRepresentation($identifier, ModelRepresentation $representation)
   {
@@ -78,7 +77,7 @@ class Model extends DataHolder
   }
 
   /**
-   * @param string $representation      Representation identifier
+   * @param string $representation Representation identifier
    * @param array $data
    */
   protected function applyRepresentation($representation, array $data)
@@ -91,5 +90,14 @@ class Model extends DataHolder
   protected function getRepresentation($identifier)
   {
     //@todo
+  }
+
+  /**
+   * @param string $name
+   * @return Table
+   */
+  protected function getTable($name)
+  {
+    return DatabaseManager::getInstance()->getTable($name);
   }
 }

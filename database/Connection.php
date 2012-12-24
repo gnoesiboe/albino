@@ -1,5 +1,7 @@
 <?php
 
+namespace Albino\Database;
+
 /**
  * Connection class.
  *
@@ -12,7 +14,7 @@ class Connection
 {
 
   /**
-   * @var PDO
+   * @var \PDO
    */
   protected $connection = null;
 
@@ -107,8 +109,8 @@ class Connection
    */
   public function open()
   {
-    $this->connection = new PDO($this->generateDsn(), $this->options['username'], $this->options['password'], array(
-      Pdo::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+    $this->connection = new \PDO($this->generateDsn(), $this->options['username'], $this->options['password'], array(
+      \Pdo::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
     ));
   }
 
@@ -140,7 +142,7 @@ class Connection
    * @param string $query
    * @param array $driverOptions
    *
-   * @return PDOStatement
+   * @return \PDOStatement
    */
   public function prepare($query, $driverOptions = array())
   {

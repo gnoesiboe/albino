@@ -51,6 +51,7 @@ class Autoloader
   {
     $result = spl_autoload_unregister(array(self::getInstance(), 'load'));
     self::$registered = $result;
+
     return $result;
   }
 
@@ -64,20 +65,29 @@ class Autoloader
   protected function load($className)
   {
     // Attempt to autoload only Albino classes.
-    if (substr($className, 0, strlen(__NAMESPACE__)) !== __NAMESPACE__) {
+    if (substr($className, 0, strlen(__NAMESPACE__)) !== __NAMESPACE__)
+    {
       return false;
     }
 
     // Parse the class filename.
     $classLocation = sprintf(
       '%s%s%s.php',
-      dirname(dirname(__FILE__)), // Albino root directory
+      $this->getRootDir(),
       DIRECTORY_SEPARATOR,
       str_replace("\\", "/", $className)
     );
 
     require_once($classLocation);
     return true;
+  }
+
+  /**
+   * @return string
+   */
+  protected function getRootDir()
+  {
+    return dirname(dirname(__FILE__));
   }
 
   /**
@@ -89,9 +99,11 @@ class Autoloader
    */
   protected function getInstance()
   {
-    if (is_null(self::$instance) === true) {
+    if (is_null(self::$instance) === true)
+    {
       self::$instance = new self();
     }
+
     return self::$instance;
   }
 
@@ -102,7 +114,8 @@ class Autoloader
    * @author Wesley van Opdorp <thorgzor@gmail.com>
    * @return bool
    */
-  public function isRegistered() {
+  public function isRegistered()
+  {
     return (bool) self::$registered;
   }
 }

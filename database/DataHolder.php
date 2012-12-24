@@ -1,5 +1,7 @@
 <?php
 
+namespace Albino\Database;
+
 /**
  * DataHolder class.
  *
