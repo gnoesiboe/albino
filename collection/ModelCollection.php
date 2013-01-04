@@ -1,9 +1,9 @@
 <?php
 
-namespace Albino\Database\Collection;
+namespace Albino\Collection;
 
-use \Albino\Database\Model;
-use \Albino\Database\Collection;
+use \Albino\Model;
+use \Albino\Collection;
 
 /**
  * ModelCollection class.

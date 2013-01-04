@@ -3,119 +3,117 @@
 namespace Albino;
 
 /**
- * @author     Wesley van Opdorp <wesley@freshheads.com>
+ * Autoloader class.
+ *
+ * @package    Albino
+ * @subpackage Autoloader
+ * @author     Gijs Nieuwenhuis <gijs.nieuwenhuis@freshheads.com>
+ * @copyright  Freshheads BV
  */
 class Autoloader
 {
 
   /**
-   * Static constainer for the autoloader instance.
-   *
-   * @var Autoloader
+   * @var array
    */
-  protected static $instance;
+  protected $namespaces = array();
 
   /**
-   * Boolean wether the autoloader is registered.
-   *
-   * @var bool
+   * @return array
    */
-  protected static $registered = false;
+  public function getNamespaces()
+  {
+    return $this->namespaces;
+  }
 
   /**
-   * Attempts to register the Albino autoload method.
-   *
-   * @author Wesley van Opdorp <thorgzor@gmail.com>
-   * @static
+   * @param string $namespace
    * @return bool
    */
-  static public function register()
+  public function hasNamespace($namespace)
   {
-    if (self::$registered === false)
-    {
-      $result = spl_autoload_register(array(self::getInstance(), 'load'));
-      self::$registered = $result;
-    }
-
-    return self::$registered;
+    return array_key_exists($namespace, $this->namespaces);
   }
 
   /**
-   * Attempts to unregister the Albino autoload method.
-   *
-   * @author Wesley van Opdorp <thorgzor@gmail.com>
-   * @static
-   * @return bool
+   * @param string $namespace
+   * @param array|string $paths
    */
-  static public function unregister()
+  public function addNamespace($namespace, $paths)
   {
-    $result = spl_autoload_unregister(array(self::getInstance(), 'load'));
-    self::$registered = $result;
-
-    return $result;
+    $this->namespaces[$namespace] = (array) $paths;
   }
 
   /**
-   * Method responsible for loading actual classes.
-   *
-   * @author Wesley van Opdorp <thorgzor@gmail.com>
-   * @param string $className
-   * @return bool
-   */
-  protected function load($className)
-  {
-    // Attempt to autoload only Albino classes.
-    if (substr($className, 0, strlen(__NAMESPACE__)) !== __NAMESPACE__)
-    {
-      return false;
-    }
-
-    // Parse the class filename.
-    $classLocation = sprintf(
-      '%s%s%s.php',
-      $this->getRootDir(),
-      DIRECTORY_SEPARATOR,
-      str_replace("\\", "/", $className)
-    );
-
-    require_once($classLocation);
-    return true;
-  }
-
-  /**
-   * @return string
-   */
-  protected function getRootDir()
-  {
-    return dirname(dirname(__FILE__));
-  }
-
-  /**
-   * Fetches a autoloader instance, is a singleton.
-   * Exists so we can unregister the exact same instance.
-   *
-   * @author Wesley van Opdorp <thorgzor@gmail.com>
+   * @param array $namespaces
    * @return Autoloader
    */
-  protected function getInstance()
+  public function addNamespaces(array $namespaces)
   {
-    if (is_null(self::$instance) === true)
+    foreach ($namespaces as $namespace => $paths)
     {
-      self::$instance = new self();
+      $this->addNamespace($namespace, $paths);
     }
 
-    return self::$instance;
+    return $this;
   }
 
   /**
-   * Basic method to check whether the autoloader
-   * has been registered.
-   *
-   * @author Wesley van Opdorp <thorgzor@gmail.com>
-   * @return bool
+   * @param string $class
    */
-  public function isRegistered()
+  public function requireClass($class)
   {
-    return (bool) self::$registered;
+    if ($file = $this->getFileForClass($class))
+    {
+      require_once $file;
+    }
+  }
+
+  /**
+   * @param string $class
+   * @return string
+   */
+  public function getFileForClass($class)
+  {
+    if ($class[0] === '\\')
+    {
+      $class = substr($class, 1);
+    }
+
+    $posDevider = strpos($class, '\\');
+    if ($posDevider === false)
+    {
+      return null;
+    }
+
+    $namespace = substr($class, 0, $posDevider);
+    if ($this->hasNamespace($namespace) === false)
+    {
+      return null;
+    }
+
+    $namespacePath = substr($class, $posDevider + 1);
+
+    foreach ($this->namespaces[$namespace] as $path)
+    {
+      $filePath = $path . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $namespacePath) . '.php';
+
+      if (file_exists($filePath) === true)
+      {
+        return $filePath;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * @param boolean $prepend
+   * @return Autoloader
+   */
+  public function register($prepend = false)
+  {
+    spl_autoload_register(array($this, 'requireClass'), true, $prepend);
+    return $this;
   }
 }

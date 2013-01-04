@@ -1,6 +1,6 @@
 <?php
 
-namespace Albino\Database;
+namespace Albino;
 
 /**
  * Model class.
@@ -10,7 +10,7 @@ namespace Albino\Database;
  * @author     Gijs Nieuwenhuis <gijs.nieuwenhuis@freshheads.com>
  * @copyright  Freshheads BV
  */
-abstract class Model extends \Albino\Database\DataHolder
+abstract class Model extends \Albino\DataHolder
 {
 
   /**
@@ -47,7 +47,7 @@ abstract class Model extends \Albino\Database\DataHolder
 
   /**
    * @param $identifier
-   * @param \Albino\Database\ModelRepresentation $representation
+   * @param \Albino\ModelRepresentation $representation
    */
   public function addRepresentation($identifier, ModelRepresentation $representation)
   {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Albino\Database;
+namespace Albino;
 
-use Albino\Database\Collection\ModelCollection;
+use Albino\Collection\ModelCollection;
 
 /**
  * Table class.
@@ -102,7 +102,7 @@ abstract class Table
    * @param $modelClassName
    * @param array $data
    *
-   * @return \Albino\Database\Model;
+   * @return \Albino\Model;
    */
   protected function generateModel($modelClassName, array $data = array())
   {

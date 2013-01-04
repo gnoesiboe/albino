@@ -1,6 +1,6 @@
 <?php
 
-namespace Albino\Database;
+namespace Albino;
 
 /**
  * Collection class.
